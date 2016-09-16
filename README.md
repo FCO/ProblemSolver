@@ -11,5 +11,5 @@ $problem.add-variable: "b", ^100;
 $problem.add-constraint: -> :$a, :$b {$a * 3 == $b + 14};
 $problem.add-constraint: -> :$a, :$b {$a * 2 == $b};
 
-say $problem.solve
+say $problem.solve						# ((a => 14 b => 28))
 ```
