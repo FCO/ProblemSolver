@@ -1,7 +1,7 @@
 use lib ".";
 
-use Constrainer;
-my $problem = Constrainer.new;
+use Problem;
+my Problem $problem .= new;
 
 $problem.add-variable: "S", 1 ..^ 10;
 $problem.add-variable: "E", ^10;

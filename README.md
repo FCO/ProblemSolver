@@ -1,9 +1,8 @@
 # Constrainer
 
 ```perl6
-use Constrainer;
-
-my $problem = Constrainer.new;
+use Problem;
+my Problem $problem .= new;
 
 $problem.add-variable: "a", ^100;
 $problem.add-variable: "b", ^100;
@@ -15,8 +14,8 @@ say $problem.solve						# ((a => 14 b => 28))
 ```
 
 ```perl6
-use Constrainer;
-my $problem = Constrainer.new;
+use Problem;
+my Problem $problem .= new;
 
 $problem.add-variable: "S", 1 ..^ 10;
 $problem.add-variable: "E", ^10;
