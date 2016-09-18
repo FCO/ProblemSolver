@@ -1,9 +1,14 @@
 unit class Problem;
 use State;
 
-has Callable	@!constraints	handles add-constraint	=> 'push';
-has Callable	%!heuristics	handles add-heuristic	=> 'push';
-has	State		$!variables		handles <add-variable>	.= new;
+has Callable			@!constraints	handles add-constraint	=> 'push';
+has	State				$!variables		handles <add-variable>	.= new;
+has						&.print-found	is rw;
+has Array of Callable	%!heuristics;
+
+method add-heuristic($var, &heu) {
+	%!heuristics{$var}.push: &heu
+}
 
 method solve {
 	self!solve-all($!variables)
@@ -20,6 +25,7 @@ method !solve-all($todo) {
 	for $todo.iterate-over($key) -> $new {
 		next unless self!run-constraints($new.found-hash);
 		self!remove-values($new, :variable($key), :value($new.get($key))) if %!heuristics{$key}:exists;
+		&!print-found($new.found-hash) if &!print-found;
 		@resp.push: self!solve-all($new);
 	}
 	|@resp
@@ -57,7 +63,7 @@ method constraint-vars(&red, @vars) {
 		$.add-constraint(&func)
 	}
 	for @vars -> $var {
-		$.add-heuristic($var => -> $todo, $value {
+		$.add-heuristic($var, -> $todo, $value {
 			for @vars.grep(* !eq $var) (&) $todo.not-found-vars -> $var {
 				$todo.find-and-remove-from: $var.key, &red.assuming: $value
 			}
