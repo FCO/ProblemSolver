@@ -1,7 +1,7 @@
 use lib ".";
 
 use Problem;
-my Problem $problem .= new;
+my Problem $problem .= new: :stop-on-first-solution;
 
 sub print-board(%values) {
 	my @board;
@@ -11,9 +11,9 @@ sub print-board(%values) {
 	for ^4 -> $row {
 		for ^4 -> $col {
 			if @board[$row; $col]:exists {
-				print @board[$row; $col], " "
+				print "● "
 			} else {
-				print ".. "
+				print "◦ "
 			}
 		}
 		print "\n"
