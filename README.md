@@ -1,4 +1,4 @@
-# Constrainer
+# ProblemSolver
 
 ```perl6
 use Problem;
