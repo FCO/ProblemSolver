@@ -21,7 +21,10 @@ sub print-board(%values) {
 	print "\n"
 }
 
-$problem.print-found = &print-board;
+$problem.print-found = -> %values {
+	print "\e[0;0H\e[0J";
+	print-board(%values);
+}
 
 my @board = ^4 X ^4;
 
