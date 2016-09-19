@@ -1,10 +1,16 @@
 unit class State;
 use Domain;
 
-has %.vars;
-has %.found = Set.new;
+has 			%.vars;
+has 			%.found		= Set.new;
+has ::?CLASS	$.parent;
 
-method add-variable(Str $name, @set) {
+multi method add-variable(Str $name, $value) {
+	%!vars{$name} = $value;
+	%!found = set $name, |%!found.keys
+}
+
+multi method add-variable(Str $name, @set) {
 	%!vars{$name} = Domain[@set].new
 }
 
@@ -33,6 +39,10 @@ method next-var {
 	$.not-found-vars.first
 }
 
+method found-vars {
+	%!found.keys
+}
+
 method not-found-vars {
 	(%!vars.keys (-) %!found).keys
 }
@@ -47,7 +57,7 @@ method iterate-over(Str $var where * !~~ any(%!found.keys)) {
 		%tmp{$var}	= $val;
 		my @found	= %!found.keys;
 		@found.push: $var;
-		take self.new: :vars(%tmp), :found(set @found)
+		take self.new: :vars(%tmp), :found(set @found), :parent(self)
 	}
 }
 

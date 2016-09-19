@@ -3,16 +3,30 @@ use lib ".";
 use Problem;
 my Problem $problem .= new: :stop-on-first-solution;
 
-$problem.add-variable: "S", 1 ..^ 10;
-$problem.add-variable: "E", ^10;
-$problem.add-variable: "N", ^10;
+$problem.add-variable: "S", 9;
+$problem.add-variable: "E", ^8;
+$problem.add-variable: "N", 1 ..^ 10;
 $problem.add-variable: "D", ^10;
-$problem.add-variable: "M", 1 ..^ 10;
-$problem.add-variable: "O", ^10;
+$problem.add-variable: "M", 1;
+$problem.add-variable: "O", 0;
 $problem.add-variable: "R", ^10;
 $problem.add-variable: "Y", ^10;
 
 $problem.constraint-vars: &infix:<!=>, <S E N D M O R Y>;
+$problem.add-constraint: -> :$E!, :$D!, :$Y! { $D + $E = $Y | $Y + 10 };
+$problem.add-constraint: -> :$E!, :$N! { $E + 1 == $N };
+$problem.add-constraint: -> :$R!, :$N! { $N + $R > 9 };
+$problem.add-constraint: -> :$E!, :$N!, :$R!, :$D!, :$Y! {
+					10 * $N + $D
+	+				10 * $R + $E
+	==	(0 | 100) +	10 * $E + $Y
+};
+$problem.add-constraint: -> :$E!, :$N!, :$D!, :$O!, :$R!, :$Y! {
+
+					 100*$E + 10*$N + $D
+	+				 100*$O + 10*$R + $E
+	==	(0 | 1000) + 100*$N + 10*$E + $Y
+};
 $problem.add-constraint: -> :$S!, :$E!, :$N!, :$D!, :$M!, :$O!, :$R!, :$Y! {
 	note "$S$E$N$D + $M$O$R$E == $M$O$N$E$Y";
 

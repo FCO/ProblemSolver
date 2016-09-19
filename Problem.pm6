@@ -13,6 +13,9 @@ method add-heuristic($var, &heu) {
 }
 
 method solve {
+	for $!variables.found-vars -> $key {
+		self!remove-values($!variables, :variable($key), :value($!variables.get($key))) if %!heuristics{$key}:exists;
+	}
 	self!solve-all($!variables)
 }
 
