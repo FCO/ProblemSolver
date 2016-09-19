@@ -162,5 +162,10 @@ $problem.constraint-vars: -> $color1, $color2 { $color1 !eq $color2 }, <minas-ge
 $problem.constraint-vars: -> $color1, $color2 { $color1 !eq $color2 }, <parana santa-catarina>;
 $problem.constraint-vars: -> $color1, $color2 { $color1 !eq $color2 }, <santa-catarina rio-grande-do-sul>;
 
-say $problem.solve;
+my %res = $problem.solve.first;
+my $size = %res.keys.map(*.chars).max;
+for %res.kv -> $state, $color {
+	printf "%{$size}s => %s\n", $state, $color;
+}
+
 ```
