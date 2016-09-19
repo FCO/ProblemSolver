@@ -44,7 +44,7 @@ $problem.constraint-vars: -> $q1, $q2 {
 }, <Q1 Q2 Q3 Q4>;
 
 my @response = $problem.solve;
-say "\n", "=" x 30, "Answers", "=" x 30, "\n";
+say "\n", "=" x 30, " Answers ", "=" x 30, "\n";
 
 for @response -> %ans {
 	print-board(%ans)
