@@ -17,7 +17,7 @@ say $problem.solve						# ((a => 14 b => 28))
 # SEND + MORE = MONEY
 
 use Problem;
-my Problem $problem .= new;
+my Problem $problem .= new: :stop-on-first-solution;
 
 $problem.add-variable: "S", 1 ..^ 10;
 $problem.add-variable: "E", ^10;
