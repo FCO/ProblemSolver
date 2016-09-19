@@ -1,7 +1,7 @@
 use lib ".";
 
 use Problem;
-my Problem $problem .= new;
+my Problem $problem .= new: :stop-on-first-solution;
 
 $problem.add-variable: "S", 1 ..^ 10;
 $problem.add-variable: "E", ^10;
@@ -12,8 +12,6 @@ $problem.add-variable: "O", ^10;
 $problem.add-variable: "R", ^10;
 $problem.add-variable: "Y", ^10;
 
-
-#$problem.add-constraint: -> *%all {note "ALL {%all.values}"; [!=] %all.values};
 $problem.constraint-vars: &infix:<!=>, <S E N D M O R Y>;
 $problem.add-constraint: -> :$S!, :$E!, :$N!, :$D!, :$M!, :$O!, :$R!, :$Y! {
 	note "$S$E$N$D + $M$O$R$E == $M$O$N$E$Y";

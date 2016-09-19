@@ -1,6 +1,8 @@
 unit class Problem;
 use State;
 
+has Bool				$.stop-on-first-solution				= False;
+has Bool				$!found-solution						= False;
 has Callable			@!constraints	handles add-constraint	=> 'push';
 has	State				$!variables		handles <add-variable>	.= new;
 has						&.print-found	is rw;
@@ -17,7 +19,10 @@ method solve {
 method !solve-all($todo) {
 	if $todo.found-everything {
 		my %tmp = $todo.Hash;
-		return %tmp if self!run-constraints(%tmp);
+		if self!run-constraints(%tmp) {
+			$!found-solution = True;
+			return %tmp
+		}
 		return
 	}
 	my @resp;
@@ -27,6 +32,7 @@ method !solve-all($todo) {
 		self!remove-values($new, :variable($key), :value($new.get($key))) if %!heuristics{$key}:exists;
 		&!print-found($new.found-hash) if &!print-found;
 		@resp.push: self!solve-all($new);
+		last if $!stop-on-first-solution and $!found-solution
 	}
 	|@resp
 }
