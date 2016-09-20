@@ -7,7 +7,7 @@ has ::?CLASS	$.parent;
 
 multi method add-variable(Str $name, $value) {
 	%!vars{$name} = $value;
-	%!found = set $name, |%!found.keys
+	%!found = %!found (|) $name
 }
 
 multi method add-variable(Str $name, @set) {
@@ -47,20 +47,23 @@ method not-found-vars {
 	(%!vars.keys (-) %!found).keys
 }
 
-method get(Str $var where * ~~ any(%!found.keys)) {
+method get(Str $var where {%!found{$_}}) {
 	%!vars{$var}
 }
 
-method iterate-over(Str $var where * !~~ any(%!found.keys)) {
+method iterate-over(Str $var where {not %!found{$_}}) {
 	gather for %!vars{$var}.keys -> $val {
 		my %tmp		= self.Hash;
 		%tmp{$var}	= $val;
-		my @found	= %!found.keys;
-		@found.push: $var;
-		take self.new: :vars(%tmp), :found(set @found), :parent(self)
+		take self.new: :vars(%tmp), :found(%!found (|) $var), :parent(self)
 	}
 }
 
-method find-and-remove-from(Str $var where * !~~ any(%!found.keys), &should-remove) {
+method recursive-find-and-remove-from(Str $var where {not %!found{$_}}, &should-remove) {
+	$!parent.recursive-find-and-remove-from($var, &should-remove) if $!parent;
+	$.find-and-remove-from($var, &should-remove)
+}
+
+method find-and-remove-from(Str $var where {not %!found{$_}}, &should-remove) {
 	%!vars{$var} .= find-and-remove(&should-remove);
 }
