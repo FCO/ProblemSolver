@@ -18,13 +18,17 @@ for @vars -> $var {
 }
 
 sub print-sheet(%vals) {
+	my $c;
 	for @vars -> $var {
+		$c++;
 		if %vals{$var}:exists {
 			print %vals{$var}, "  ";
 		} else {
 			print "-  "
 		}
-		print "\n" if ++$ %% 9
+		print "  " if $c %% 3;
+		print "\n" if $c %% 9;
+		print "\n" if $c %% 27;
 	}
 }
 
