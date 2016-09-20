@@ -4,6 +4,7 @@ use Domain;
 has 			%.vars;
 has 			%.found		= Set.new;
 has ::?CLASS	$.parent;
+has Callable	@.bla;
 
 multi method add-variable(Str $name, $value) {
 	%!vars{$name} = $value;
