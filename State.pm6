@@ -24,11 +24,8 @@ method Hash {
 }
 
 method found-hash {
-	my %tmp;
-	for %!found.keys -> $key {
-		%tmp{$key} = %!vars{$key}
-	}
-	%tmp
+	my @keys = %!found.keys;
+	%( @keys Z=> %!vars{@keys} )
 }
 
 method found-everything {
