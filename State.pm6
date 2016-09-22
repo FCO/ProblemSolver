@@ -15,12 +15,8 @@ multi method add-variable(Str $name, @set) {
 }
 
 method Hash {
-	my %tmp;
-	for %!vars.keys -> $key {
-		%tmp{$key} = %!vars{$key};
-		%tmp{$key} .= clone if $key (elem) %!found;
-	}
-	%tmp
+	my @keys = %!vars.keys;
+	%( @keys Z=> %!vars{@keys} )
 }
 
 method found-hash {
