@@ -3,10 +3,14 @@ use State;
 
 has Bool				$.stop-on-first-solution				= False;
 has Bool				$!found-solution						= False;
-has Callable			@!constraints	handles add-constraint	=> 'push';
+has Array of Callable	%!constraints{Signature};
 has	State				$!variables		handles <add-variable>	.= new;
 has						&.print-found	is rw;
 has Array of Callable	%!heuristics;
+
+method add-constraint(&const) {
+	%!constraints{&const.signature}.push: &const
+}
 
 method add-heuristic($var, &heu) {
 	%!heuristics{$var}.push: &heu
@@ -57,7 +61,8 @@ method !run-constraints(%values) {
 }
 
 method !get-constraints-for-vars(%vars) {
-	@!constraints.grep: -> &func { %vars ~~ &func.signature }
+	my @keys = %!constraints.keys.grep: -> \sig { %vars ~~ sig }
+	|%!constraints{@keys}.map: |*
 }
 
 method constraint-vars(&red, @vars) {
