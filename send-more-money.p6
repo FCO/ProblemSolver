@@ -12,7 +12,7 @@ $problem.add-variable: "O", 0;
 $problem.add-variable: "R", ^10;
 $problem.add-variable: "Y", ^10;
 
-$problem.constraint-vars: &infix:<!=>, <S E N D M O R Y>;
+$problem.unique-vars: <S E N D M O R Y>;
 $problem.add-constraint: -> :$E!, :$D!, :$Y! { $D + $E = $Y | $Y + 10 };
 $problem.add-constraint: -> :$E!, :$N! { $E + 1 == $N };
 $problem.add-constraint: -> :$R!, :$N! { $N + $R > 9 };
