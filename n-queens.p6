@@ -22,9 +22,9 @@ sub MAIN(Int $n = 4) {
 		for ^$n -> $row {
 			for ^$n -> $col {
 				if @board[$row; $col]:exists {
-					print "● "
+					print "♛ "
 				} else {
-					print "◦ "
+					print "☐ "
 				}
 			}
 			print "\n"
@@ -35,6 +35,7 @@ sub MAIN(Int $n = 4) {
 	$problem.print-found = -> %values {
 		print "\e[0;0H\e[0J";
 		print-board(%values);
+		say +%values
 	}
 
 	my @board = (^$n X ^$n).map(-> ($x, $y) {Point.new: :$x, :$y});
@@ -44,6 +45,7 @@ sub MAIN(Int $n = 4) {
 		$problem.add-variable: $var, @board;
 	}
 
+	#$problem.no-order-vars: @vars;
 	$problem.unique-vars: @vars;
 
 	$problem.constraint-vars: -> $q1, $q2 {

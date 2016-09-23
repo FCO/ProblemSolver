@@ -40,6 +40,13 @@ method not-found-vars {
 	(%!vars.keys (-) %!found).keys
 }
 
+method has-empty-vars {
+	for %!vars{@( $.not-found-vars )} -> $var {
+		return True if $var.elems == 0
+	}
+	return False
+}
+
 method get(Str $var where {%!found{$_}}) {
 	%!vars{$var}
 }
@@ -61,6 +68,19 @@ method find-and-remove-from(Str $var where {not %!found{$_}}, &should-remove) {
 	%!vars{$var} .= find-and-remove(&should-remove);
 }
 
+method recursive-remove-from-vars(@vars, $value) {
+	$!parent.recursive-remove-from-vars(@vars, $value) if $!parent;
+	for (@vars (-) %!found).keys -> $var {
+		$.remove-from($var, $value)
+	}
+}
+
 method remove-from(Str $var where {not %!found{$_}}, $val) {
-	%!vars{$var} .= remove($val);
+	my $new = %!vars{$var}.remove($val);
+	if $new.elems == 1 {
+		%!vars{$var} = $new.keys.first;
+		%!found (|)= $var
+	} else {
+		%!vars{$var} = $new;
+	}
 }

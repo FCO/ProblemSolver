@@ -24,24 +24,24 @@ method solve {
 }
 
 method !solve-all($todo) {
-	if $todo.found-everything {
-		my %tmp = $todo.Hash;
-		if self!run-constraints(%tmp) {
+	do if $todo.found-everything {
+		my %tmp = $todo.found-hash;
+		do if self!run-constraints(%tmp, :debug) {
 			$!found-solution = True;
-			return %tmp
+			%tmp
 		}
-		return
+	} else {
+		my @resp;
+		my $key = $todo.next-var;
+		for $todo.iterate-over($key) -> $new {
+			next unless self!run-constraints($new.found-hash) or $new.has-empty-vars;
+			self!remove-values($new, :variable($key), :value($new.get($key))) if %!heuristics{$key}:exists;
+			&!print-found($new.found-hash) if &!print-found;
+			@resp.push: self!solve-all($new);
+			last if $!stop-on-first-solution and $!found-solution
+		}
+		|@resp
 	}
-	my @resp;
-	my $key = $todo.next-var;
-	for $todo.iterate-over($key) -> $new {
-		next unless self!run-constraints($new.found-hash);
-		self!remove-values($new, :variable($key), :value($new.get($key))) if %!heuristics{$key}:exists;
-		&!print-found($new.found-hash) if &!print-found;
-		@resp.push: self!solve-all($new);
-		last if $!stop-on-first-solution and $!found-solution
-	}
-	|@resp
 }
 
 method !remove-values($todo, Str :$variable, :$value) {
@@ -52,7 +52,7 @@ method !remove-values($todo, Str :$variable, :$value) {
 	}
 }
 
-method !run-constraints(%values) {
+method !run-constraints(%values, :$debug) {
 	my @cons = self!get-constraints-for-vars(%values);
 	for @cons -> &func {
 		return False if not func(|%values)
@@ -102,6 +102,15 @@ method unique-vars(@vars) {
 			for @v (&) $todo.not-found-vars -> $var {
 				$todo.remove-from: $var.key, $value
 			}
+		})
+	}
+}
+
+method no-order-vars(+@vars) {
+	for @vars -> $var {
+		my @v = @vars.grep(* !eq $var);
+		$.add-heuristic($var, -> $todo, $value {
+			$todo.recursive-remove-from-vars: @v, $value
 		})
 	}
 }
