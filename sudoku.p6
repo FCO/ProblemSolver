@@ -38,15 +38,15 @@ $problem.print-found = -> %values {
 }
 
 for ^9 -> $i {
-	$problem.constraint-vars: &infix:<!=>, (^9).map("var$i" ~ *)
+	$problem.unique-vars: (^9).map("var$i" ~ *)
 }
 
 for ^9 -> $j {
-	$problem.constraint-vars: &infix:<!=>, (^9).map("var" ~ * ~ $j)
+	$problem.unique-vars: (^9).map("var" ~ * ~ $j)
 }
 
 for ^3 X ^3 -> ($i, $j) {
-	$problem.constraint-vars: &infix:<!=>, (
+	$problem.unique-vars: (
 		(3 * $i,		3 * $j),	(3 * $i, 		3 * $j + 1),	(3 * $i,		3 * $j + 2),
 		(3 * $i + 1,	3 * $j),	(3 * $i + 1,	3 * $j + 1),	(3 * $i + 1,	3 * $j + 2),
 		(3 * $i + 2,	3 * $j),	(3 * $i + 2,	3 * $j + 1),	(3 * $i + 2,	3 * $j + 2),
