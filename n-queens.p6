@@ -1,12 +1,22 @@
 use lib ".";
 use Problem;
 
+class Point {
+	has Int $.x;
+	has Int $.y;
+
+	method WHICH {
+		"{self.^name}(:x($!x), :y($!y))"
+	}
+	method gist {$.WHICH}
+}
+
 sub MAIN(Int $n = 4) {
 	my Problem $problem .= new: :stop-on-first-solution;
 
 	sub print-board(%values) {
 		my @board;
-		for %values.kv -> $key, ($row, $col) {
+		for %values.kv -> $key, (:x($row), :y($col)) {
 			@board[$row; $col] = $key;
 		}
 		for ^$n -> $row {
@@ -27,20 +37,20 @@ sub MAIN(Int $n = 4) {
 		print-board(%values);
 	}
 
-	my @board = ^$n X ^$n;
+	my @board = (^$n X ^$n).map(-> ($x, $y) {Point.new: :$x, :$y});
 	my @vars = (1 .. $n).map: {"Q$_"};
 
 	for @vars -> $var {
 		$problem.add-variable: $var, @board;
 	}
 
-	$problem.constraint-vars: -> $q1, $q2 { $q1[0] != $q2[0] && $q1[1] != $q2[1] }, @vars;
+	$problem.constraint-vars: -> $q1, $q2 { $q1.x != $q2.x && $q1.y != $q2.y }, @vars;
 
 	$problem.constraint-vars: -> $q1, $q2 {
-			$q1[0] 			!= $q2[0]
-		&&	$q1[1]			!= $q2[1]
-		&&	$q1[0] - $q1[1]	!= $q2[0] - $q2[1]
-		&&	$q1[0] + $q1[1]	!= $q2[0] + $q2[1]
+			$q1.x 			!= $q2.x
+		&&	$q1.y			!= $q2.y
+		&&	$q1.x - $q1.y	!= $q2.x - $q2.y
+		&&	$q1.x + $q1.y	!= $q2.x + $q2.y
 	}, @vars;
 
 	my @response = $problem.solve;
