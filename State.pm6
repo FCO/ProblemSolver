@@ -60,3 +60,7 @@ method recursive-find-and-remove-from(Str $var where {not %!found{$_}}, &should-
 method find-and-remove-from(Str $var where {not %!found{$_}}, &should-remove) {
 	%!vars{$var} .= find-and-remove(&should-remove);
 }
+
+method remove-from(Str $var where {not %!found{$_}}, $val) {
+	%!vars{$var} .= remove($val);
+}

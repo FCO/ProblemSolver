@@ -44,7 +44,7 @@ sub MAIN(Int $n = 4) {
 		$problem.add-variable: $var, @board;
 	}
 
-	$problem.constraint-vars: -> $q1, $q2 { $q1.x != $q2.x && $q1.y != $q2.y }, @vars;
+	$problem.unique-vars: @vars;
 
 	$problem.constraint-vars: -> $q1, $q2 {
 			$q1.x 			!= $q2.x

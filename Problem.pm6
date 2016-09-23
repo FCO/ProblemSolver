@@ -77,9 +77,30 @@ method constraint-vars(&red, @vars) {
 		$.add-constraint(&func)
 	}
 	for @vars -> $var {
+		my @v = @vars.grep(* !eq $var);
 		$.add-heuristic($var, -> $todo, $value {
-			for @vars.grep(* !eq $var) (&) $todo.not-found-vars -> $var {
+			for @v (&) $todo.not-found-vars -> $var {
 				$todo.find-and-remove-from: $var.key, &red.assuming: $value
+			}
+		})
+	}
+}
+
+method unique-vars(@vars) {
+	my @comb = @vars.combinations(2);
+	for @comb -> @pars {
+		my $sig = @pars.map({":\${$_}!"}).join(", ");
+		my $cal = @pars.map({"\${$_}"}).join(", ");
+		use MONKEY-SEE-NO-EVAL;
+		my &func = EVAL "-> $sig, | \{ [!~~] $cal \}";
+		no MONKEY-SEE-NO-EVAL;
+		$.add-constraint(&func)
+	}
+	for @vars -> $var {
+		my @v = @vars.grep(* !eq $var);
+		$.add-heuristic($var, -> $todo, $value {
+			for @v (&) $todo.not-found-vars -> $var {
+				$todo.remove-from: $var.key, $value
 			}
 		})
 	}
