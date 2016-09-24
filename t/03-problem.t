@@ -1,10 +1,10 @@
-use lib ".";
+use lib "lib";
 use Test;
 
-use-ok "Problem";
-use Problem;
+use-ok "ProblemSolver";
+use ProblemSolver;
 
-my $p = Problem.new;
+my $p = ProblemSolver.new;
 
 ok $p;
 $p.add-variable: "A", ^10;

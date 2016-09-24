@@ -1,9 +1,9 @@
-use lib ".";
+use lib "lib";
 use Test;
 
-use-ok "State";
-use State;
-my $state = State.new;
+use-ok "ProblemSolver::State";
+use ProblemSolver::State;
+my $state = ProblemSolver::State.new;
 
 ok $state, "Create State obj";
 

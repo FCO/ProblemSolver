@@ -1,7 +1,7 @@
-use lib ".";
+use lib "lib";
 
-use Problem;
-my Problem $problem .= new: :stop-on-first-solution;
+use ProblemSolver;
+my ProblemSolver $problem .= new: :stop-on-first-solution;
 
 $problem.add-variable: "S", 9;
 $problem.add-variable: "E", ^8;

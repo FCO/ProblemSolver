@@ -1,12 +1,13 @@
-unit class Problem;
-use State;
+use ProblemSolver::State;
+unit class ProblemSolver;
 
-has Bool				$.stop-on-first-solution				= False;
-has Bool				$!found-solution						= False;
-has Array of Callable	%!constraints{Signature};
-has	State				$!variables		handles <add-variable>	.= new;
-has						&.print-found	is rw;
-has Array of Callable	%!heuristics;
+has Bool					$.stop-on-first-solution				= False;
+has Bool					$!found-solution						= False;
+has Array of Callable		%!constraints{Signature};
+has							$!variables		handles <add-variable>	= ProblemSolver::State.new;
+#has	ProblemSolver::State	$!variables		handles <add-variable>	.= new;
+has							&.print-found	is rw;
+has Array of Callable		%!heuristics;
 
 method add-constraint(&const) {
 	%!constraints{&const.signature}.push: &const

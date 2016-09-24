@@ -1,4 +1,4 @@
-unit role Domain[+@set] does Associative;
+unit role ProblemSolver::Domain[+@set] does Associative is export;
 
 has Set		$.pos handles <AT-KEY EXISTS-KEY DELETE-KEY keys> = set @set;
 has Int		$.elems = +@set;

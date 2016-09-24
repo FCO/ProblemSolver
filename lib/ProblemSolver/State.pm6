@@ -1,5 +1,5 @@
-unit class State;
-use Domain;
+use ProblemSolver::Domain;
+unit class ProblemSolver::State;
 
 has 			%.vars;
 has 			%.found		= Set.new;
@@ -11,25 +11,12 @@ multi method add-variable(Str $name, $value) {
 }
 
 multi method add-variable(Str $name, @set) {
-	%!vars{$name} = Domain[@set].new
-}
-
-method Hash {
-	my @keys = %!vars.keys;
-	%( @keys Z=> %!vars{@keys} )
+	%!vars{$name} = ProblemSolver::Domain[@set].new
 }
 
 method found-hash {
 	my @keys = %!found.keys;
 	%( @keys Z=> %!vars{@keys} )
-}
-
-method found-everything {
-	%!found ~~ set %!vars.keys
-}
-
-method next-var {
-	$.not-found-vars.first
 }
 
 method found-vars {
@@ -40,15 +27,19 @@ method not-found-vars {
 	(%!vars.keys (-) %!found).keys
 }
 
+method found-everything {
+	%!found ~~ set %!vars.keys
+}
+
+method next-var {
+	$.not-found-vars.first
+}
+
 method has-empty-vars {
 	for %!vars{@( $.not-found-vars )} -> $var {
 		return True if $var.elems == 0
 	}
 	return False
-}
-
-method get(Str $var where {%!found{$_}}) {
-	%!vars{$var}
 }
 
 method iterate-over(Str $var where {not %!found{$_}}) {
@@ -57,6 +48,15 @@ method iterate-over(Str $var where {not %!found{$_}}) {
 		%tmp{$var}	= $val;
 		take self.new: :vars(%tmp), :found(%!found (|) $var), :parent(self)
 	}
+}
+
+method Hash {
+	my @keys = %!vars.keys;
+	%( @keys Z=> %!vars{@keys} )
+}
+
+method get(Str $var where {%!found{$_}}) {
+	%!vars{$var}
 }
 
 method recursive-find-and-remove-from(Str $var where {not %!found{$_}}, &should-remove) {

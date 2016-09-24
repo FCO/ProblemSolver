@@ -1,10 +1,10 @@
-use lib ".";
+use lib "lib";
 use Test;
 
-use-ok "Domain";
-use Domain;
+use-ok "ProblemSolver::Domain";
+use ProblemSolver::Domain;
 
-my $d = Domain[1, 2, 3].new;
+my $d = ProblemSolver::Domain[1, 2, 3].new;
 ok $d, "Instanciated a Domain";
 
 is 		$d.pos,		set(1, 2, 3),	"Domain with the right possibilities";

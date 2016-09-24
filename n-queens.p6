@@ -1,5 +1,5 @@
-use lib ".";
-use Problem;
+use lib "lib";
+use ProblemSolver;
 
 class Point {
 	has Int $.x;
@@ -12,7 +12,7 @@ class Point {
 }
 
 sub MAIN(Int $n = 4) {
-	my Problem $problem .= new: :stop-on-first-solution;
+	my ProblemSolver $problem .= new: :stop-on-first-solution;
 
 	sub print-board(%values) {
 		my @board;
