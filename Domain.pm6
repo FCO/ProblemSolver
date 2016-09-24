@@ -1,4 +1,4 @@
-unit role Domain[@set] does Associative;
+unit role Domain[+@set] does Associative;
 
 has Set		$.pos handles <AT-KEY EXISTS-KEY DELETE-KEY keys> = set @set;
 has Int		$.elems = +@set;

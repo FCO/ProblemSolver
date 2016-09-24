@@ -80,7 +80,7 @@ method constraint-vars(&red, @vars) {
 		my @v = @vars.grep(* !eq $var);
 		$.add-heuristic($var, -> $todo, $value {
 			for @v (&) $todo.not-found-vars -> $var {
-				$todo.find-and-remove-from: $var.key, &red.assuming: $value
+				$todo.find-and-remove-from: $var.key, -> $v { not red($v, $value) }
 			}
 		})
 	}
