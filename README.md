@@ -1,4 +1,6 @@
-# ProblemSolverSolver
+[![Build Status](https://travis-ci.org/FCO/ProblemSolver.svg?branch=master)](https://travis-ci.org/FCO/ProblemSolver)
+
+# ProblemSolver
 
 ```perl6
 use ProblemSolver;
