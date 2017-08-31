@@ -1,118 +1,53 @@
-use ProblemSolver::State;
 unit class ProblemSolver;
 
-has Bool					$.stop-on-first-solution				= False;
-has Bool					$!found-solution						= False;
-has Array of Callable		%!constraints{Signature};
-has							$!variables		handles <add-variable>	= ProblemSolver::State.new;
-#has	ProblemSolver::State	$!variables		handles <add-variable>	.= new;
-has							&.print-found	is rw;
-has Array of Callable		%!heuristics;
+has     %.variables;
+has Bag $.vars				.= new;
+has 	%.constraints{Set};
+has 	%.heuristics{Str};
+has     %.found;
 
-method add-constraint(&const) {
-	%!constraints{&const.signature}.push: &const
+multi method create-variable(Str $name where { not %!variables{$_}:exists }, Bag() \values) {
+	$!vars = |$!vars (+) Pair.new: $name, 1;
+	%!variables = |%!variables, $name => values;
 }
 
-method add-heuristic($var, &heu) {
-	%!heuristics{$var}.push: &heu
+multi method create-variable(Bag $names where { %!variables{$_.none}:exists }, Bag() \values) {
+	$!vars = $!vars (+) $names;
+	%!variables = |%!variables, |do for $names.keys -> $name { $name => values }
+}
+
+method add-constraint(Set() \vars where {%!variables{vars.keys.all}:exists}, &constraint) {
+	%!constraints{vars}.push: &constraint
+}
+
+method add-heuristic(Set() \vars where {%!variables{vars.keys.all}:exists}, &heuristic) {
+	%!heuristics{$_}.push: &heuristic for vars.keys
+}
+
+multi method remove-possibility(Str \name where {%!variables{name}:exists}, \value) {
+    %!variables{name} = %!variables{name} (-) bag(value xx %!variables{name}{value});
+    fail if %!variables{name}.elems == 0;
+    %!variables{name} = %!variables{name}.keys[0] if %!variables{name}.elems == 1;
+}
+
+method variable-bag {
+    %!variables.keys.map(-> Str \var {
+        slip var xx (($!vars{var} * %!constraints.pairs.grep(var ∈ *.key).map(*.value.elems).sum) || 1)
+    }).Bag
+}
+
+method variable-order {
+    |$.variable-bag.pairs.sort({-.value}).map: {.key}
 }
 
 method solve {
-	for $!variables.found-vars -> $key {
-		self!remove-values($!variables, :variable($key), :value($!variables.get($key))) if %!heuristics{$key}:exists;
-	}
-	self!solve-all($!variables)
+    # TODO: Run constraints
+    # TODO: Run heuristics
+    for $.variable-order -> $var {
+        for |%!variables{$var}.pairs.sort(-*.value).map: *.key -> $value {
+            my %variables = |%!variables, $var => $value;
+            my $clone = self.clone: :variables(%variables), :vars($!vars (-) bag($var xx $!vars{$var}));
+            note $clone
+        }
+    }
 }
-
-method !solve-all($todo) {
-	do if $todo.found-everything {
-		my %tmp = $todo.found-hash;
-		do if self!run-constraints(%tmp, :debug) {
-			$!found-solution = True;
-			%tmp
-		}
-	} else {
-		my @resp;
-		my $key = $todo.next-var;
-		for $todo.iterate-over($key) -> $new {
-			next unless self!run-constraints($new.found-hash) or $new.has-empty-vars;
-			self!remove-values($new, :variable($key), :value($new.get($key))) if %!heuristics{$key}:exists;
-			&!print-found($new.found-hash) if &!print-found;
-			@resp.push: self!solve-all($new);
-			last if $!stop-on-first-solution and $!found-solution
-		}
-		|@resp
-	}
-}
-
-method !remove-values($todo, Str :$variable, :$value) {
-	if %!heuristics{$variable}:exists {
-		for @( %!heuristics{$variable} ) -> &func {
-			func($todo, $value)
-		}
-	}
-}
-
-method !run-constraints(%values, :$debug) {
-	my @cons = self!get-constraints-for-vars(%values);
-	for @cons -> &func {
-		return False if not func(|%values)
-	}
-	True
-}
-
-method !get-constraints-for-vars(%vars) {
-	my @keys = %!constraints.keys.grep: -> \sig { %vars ~~ sig }
-	|%!constraints{@keys}.map: |*
-}
-
-method constraint-vars(&red, @vars) {
-	my $pars = &red.signature.params.elems;
-	my @comb = @vars.combinations($pars);
-	for @comb -> @pars {
-		my $sig = @pars.map({":\${$_}!"}).join(", ");
-		my $cal = @pars.map({"\${$_}"}).join(", ");
-		use MONKEY-SEE-NO-EVAL;
-		my &func = EVAL "-> $sig, | \{ red($cal)\}";
-		no MONKEY-SEE-NO-EVAL;
-		$.add-constraint(&func)
-	}
-	for @vars -> $var {
-		my @v = @vars.grep(* !eq $var);
-		$.add-heuristic($var, -> $todo, $value {
-			for @v (&) $todo.not-found-vars -> $var {
-				$todo.find-and-remove-from: $var.key, -> $v { not red($v, $value) }
-			}
-		})
-	}
-}
-
-method unique-vars(@vars) {
-	my @comb = @vars.combinations(2);
-	for @comb -> @pars {
-		my $sig = @pars.map({":\${$_}!"}).join(", ");
-		my $cal = @pars.map({"\${$_}"}).join(", ");
-		use MONKEY-SEE-NO-EVAL;
-		my &func = EVAL "-> $sig, | \{ [!~~] $cal \}";
-		no MONKEY-SEE-NO-EVAL;
-		$.add-constraint(&func)
-	}
-	for @vars -> $var {
-		my @v = @vars.grep(* !eq $var);
-		$.add-heuristic($var, -> $todo, $value {
-			for @v (&) $todo.not-found-vars -> $var {
-				$todo.remove-from: $var.key, $value
-			}
-		})
-	}
-}
-
-method no-order-vars(+@vars) {
-	for @vars -> $var {
-		my @v = @vars.grep(* !eq $var);
-		$.add-heuristic($var, -> $todo, $value {
-			$todo.recursive-remove-from-vars: @v, $value
-		})
-	}
-}
-
