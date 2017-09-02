@@ -3,7 +3,7 @@ unit class ProblemSolver;
 has         %.variables;
 has Bag     $.vars				.= new;
 has 	    %.constraints{Set};
-has 	    %.heuristics{Set};
+has 	    %.heuristics{Str};
 has         %.found;
 has			&.print-found is rw;
 
@@ -21,12 +21,37 @@ method add-constraint(Set() \vars where {%!variables{.keys.all}:exists}, &constr
 	%!constraints{vars}.push: &constraint
 }
 
-method add-heuristic(
-	Set() \consts where {%!variables{.keys.all}:exists},
-	Set() $to-rem where {%!variables{.keys.all}:exists},
+multi method add-heuristic(
+	Str() \consts where {%!variables{$_}:exists},
+	Str() \to-rem where {%!variables{$_}:exists},
 	&heuristic
 ) {
-	%!heuristics{consts}.push: {code => &heuristic, :$to-rem}
+	%!heuristics{consts}{to-rem}.push: &heuristic;
+	%!heuristics{to-rem}{consts}.push: -> $a, $b { heuristic $b, $a }
+}
+
+multi method add-heuristic(
+	Set() \consts where {%!variables{$_}:exists},
+	Str() \to-rem where {%!variables{.keys.all}:exists},
+	&heuristic
+) {
+	$.add-heuristic($_, to-rem, &heuristic) for consts.keys
+}
+
+multi method add-heuristic(
+	Str() \const  where {%!variables{$_}:exists},
+	Set() \to-rem where {%!variables{.keys.all}:exists},
+	&heuristic
+) {
+	$.add-heuristic(const, $_, &heuristic) for to-rem.keys
+}
+
+multi method add-heuristic(
+	Set() \consts where {%!variables{.keys.all}:exists},
+	Set() \to-rem where {%!variables{.keys.all}:exists},
+	&heuristic
+) {
+	$.add-heuristic(consts, $_, &heuristic) for to-rem.keys
 }
 
 role Found {}
@@ -67,8 +92,8 @@ method get-constraints {
 
 method run-heuristcs {
 	# TODO: implement heuristics
-	for |%!heuristics.pairs.grep(*.key ⊆ $.constants.keys.Set).kv -> %from, (:&code, :%to-rem) {
-		code(%from.keys)
+	for |%!heuristics.pairs.grep(* ∈ $.constants.keys.Set).kv -> $key, %to-rem {
+		# TODO!!!
 	}
 }
 
