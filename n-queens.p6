@@ -41,9 +41,7 @@ sub MAIN(Int $n = 4) {
 	my @board = (^$n X ^$n).map(-> ($x, $y) {Point.new: :$x, :$y});
 	my @vars = (1 .. $n).map: {"Q$_"};
 
-	for @vars -> $var {
-		$problem.add-variable: $var, @board;
-	}
+	$problem.create-variable: @vars, @board;
 
 	#$problem.no-order-vars: @vars;
 	$problem.unique-vars: @vars;

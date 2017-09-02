@@ -21,9 +21,7 @@ my @states = <
 	sergipe				tocantins
 >;
 
-for @states -> $state {
-	$problem.add-variable: $state, @colors;
-}
+$problem.create-variable: @states, @colors;
 
 $problem.unique-vars: <acre amazonas>;
 $problem.unique-vars: <amazonas roraima>;
