@@ -9,6 +9,7 @@ class Point {
 		"{self.^name}(:x($!x), :y($!y))"
 	}
 	method gist {$.WHICH}
+	method Bool {$!x and $!y}
 }
 
 sub MAIN(Int $n = 4) {
@@ -44,19 +45,22 @@ sub MAIN(Int $n = 4) {
 	$problem.create-variable: @vars, @board;
 
 	#$problem.no-order-vars: @vars;
-	$problem.unique-vars: @vars;
+	$problem.unique-value-vars: @vars;
 
-	$problem.constraint-vars: -> $q1, $q2 {
+	$problem.constraint-vars: @vars, -> $q1, $q2 {
 			$q1.x 			!= $q2.x
 		&&	$q1.y			!= $q2.y
 		&&	$q1.x - $q1.y	!= $q2.x - $q2.y
 		&&	$q1.x + $q1.y	!= $q2.x + $q2.y
-	}, @vars;
+	};
 
-	my @response = $problem.solve;
+	$problem.unordered-vars: @vars;
+
+	my @solutions = eager $problem.solve;
 	say "\n", "=" x 30, " Answers ", "=" x 30, "\n";
-
-	for @response -> %ans {
+	for @solutions -> %ans {
 		print-board(%ans)
 	}
+
+	#print-board($problem.solve.head)
 }
