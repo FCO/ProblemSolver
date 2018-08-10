@@ -1,9 +1,13 @@
+os:
+  - linux
+  - osx
 language: perl6
 perl6:
   - latest
 install:
-  - rakudobrew build-panda
-  - panda installdeps .
+  - rakudobrew build zef
+  - zef install --deps-only --/test .
+  - zef install Test::META --/test
 script:
-  - PERL6_TEST_META=1 PERL6LIB=$PWD/lib prove -e perl6 -r t/
+  - PERL6LIB=$PWD/lib prove -e perl6 -vr t/
 sudo: false
