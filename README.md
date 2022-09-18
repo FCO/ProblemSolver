@@ -31,7 +31,7 @@ $problem.add-variable: "R", ^10;
 $problem.add-variable: "Y", ^10;
 
 
-$problem.constraint-vars: &infix:<!=>, <S E N D M O R Y>;
+$problem.unique-vars: <S E N D M O R Y>;
 $problem.add-constraint: -> :$S!, :$E!, :$N!, :$D!, :$M!, :$O!, :$R!, :$Y! {
 	note "$S$E$N$D + $M$O$R$E == $M$O$N$E$Y";
 
