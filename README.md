@@ -120,19 +120,19 @@ my ProblemSolver $problem .= new: :stop-on-first-solution;
 my @colors = <green yellow blue white>;
 
 my @states = <
-	acre				alagoas
-	amapa				amazonas
-	bahia				ceara
+	acre			alagoas
+	amapa			amazonas
+	bahia			ceara
 	espirito-santo		goias
-	maranhao			mato-grosso
+	maranhao		mato-grosso
 	mato-grosso-do-sul	minas-gerais
-	para				paraiba
-	parana				pernambuco
-	piaui				rio-de-janeiro
+	para			paraiba
+	parana			pernambuco
+	piaui			rio-de-janeiro
 	rio-grande-do-norte	rio-grande-do-sul
-	rondonia			roraima
+	rondonia		roraima
 	santa-catarina		sao-paulo
-	sergipe				tocantins
+	sergipe			tocantins
 >;
 
 for @states -> $state {
